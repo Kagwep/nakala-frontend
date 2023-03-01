@@ -170,6 +170,25 @@
     color: #04AA6D;
   }
 
+  .loading-container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    height: 100vh;
+  }
   
+  .spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid #eee;
+    border-top-color: #36d7b7;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+  }
   
+  @keyframes spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
   

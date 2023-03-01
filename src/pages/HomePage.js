@@ -6,6 +6,7 @@ import '../styles/pages/HomePage.css'
 
 const UsersPage = () => {
 
+  //state to store all our users
   let [users, setUsers] = useState(null);
   let [errors, setErrors] = useState(null);
   let subtitle;
@@ -15,13 +16,14 @@ const UsersPage = () => {
   const navigate = useNavigate();
 
 
+  // endpoint to get all users
   let url = 'https://users-beta.vercel.app/api/users/'
 
   // Define a useEffect hook to fetch the data when the component mounts or when the user details change
   
     async function fetchData() {
       try {
-        // Send the GET request
+        // Send the GET request to fetch users
         let response = await fetch(url, {
           method: 'GET',
           headers: {
@@ -58,19 +60,18 @@ const UsersPage = () => {
         setIsOpen(false);
       }
 
+      // navigate to user details on row click
       function handleClick(user) {
-        // history.push({
-        //   pathname: `/userdetails/${user.id}`,
-        //   state: { user }
-        // });
         navigate(`/user/${user.id}`, { state: { user } });
       }
 
 
+      // add user function
       let addUser = async (e) => {
         e.preventDefault()
         setLoading(true);
     
+        // get user details and store it in an object
         let user_details = {
           "username": e.target.username.value,
           "first_name": e.target.first_name.value,
@@ -82,6 +83,7 @@ const UsersPage = () => {
     
           console.log(user_details)
         try {
+          // make call to endpoint
           let response = await fetch('https://users-beta.vercel.app/api/users/',{
             method:'POST',
             headers:{
@@ -90,6 +92,7 @@ const UsersPage = () => {
             body:JSON.stringify(user_details)
           })
 
+          // if respose is okay close model and update users
           if(response.ok){
               console.log("this",response)
               setLoading(false);
@@ -97,6 +100,7 @@ const UsersPage = () => {
               fetchData();
               setErrors(null)
             }else{
+              // set errors gotten
               const errorData = await response.json();
               setErrors(errorData)
               console.log(errorData)
@@ -111,6 +115,7 @@ const UsersPage = () => {
 
       }
 
+      // fetch data when component mounts
       useEffect(() => {
         fetchData();
       }, []);
@@ -119,56 +124,59 @@ const UsersPage = () => {
       
   return (
     <div className='maincont'>
-    <div className='btn'>
-    <button onClick={openModal} className='addbtn'>
-      <span className="btn-icon">
-      <i className="fa fa-user-plus"></i>
-      </span>
-      Add User
-    </button>
-    
-    </div>
-    <Modal
-        isOpen={modalIsOpen}
-        onAfterOpen={afterOpenModal}
-        onRequestClose={closeModal}
-        style={customStyles}
-        contentLabel="Example Modal"
-      >
-        <h2 className='modal-title' ref={(_subtitle) => (subtitle = _subtitle)}>Add User</h2>
-        <button className='close-btn' onClick={closeModal}>X</button>
-        
-      {errors &&
-        <div className="error-notification">
-          <ul>
-            {Object.values(errors)
-              .flat()
-              .map((errorMessage, index) => (
-                <li key={index}>{errorMessage}</li>
-              ))}
-          </ul>
-        </div>
-            }
-              
-        <div className='modal-content'>
-            <form onSubmit={addUser}>
-                <input type="text" name="username" placeholder='Username' />
-                <input type="text" name="first_name" placeholder='First Name' />
-                <input type="text" name="last_name" placeholder='Last Name' />
-                <input type="number" name="phone_number" placeholder='Phone Number' />
-                <input type="email" name="email" placeholder='email' />
-                <input type="password" name="password" placeholder='Password' />
-                <button className='submit-btn' type='submit'>Submit</button>
-            </form>
-        </div>
-      </Modal>
-      <h3 className="headertext">A list of All Users</h3>
+      <div className='btn'>
+        {/* add user button */}
+      <button onClick={openModal} className='addbtn'>
+        <span className="btn-icon">
+        <i className="fa fa-user-plus"></i>
+        </span>
+        Add User
+      </button>
+      
+      </div>
+      {/* show add user modal */}
+      <Modal
+          isOpen={modalIsOpen}
+          onAfterOpen={afterOpenModal}
+          onRequestClose={closeModal}
+          style={customStyles}
+          contentLabel="Example Modal"
+        >
+          <h2 className='modal-title' ref={(_subtitle) => (subtitle = _subtitle)}>Add User</h2>
+          <button className='close-btn' onClick={closeModal}>X</button>
+          
+        {errors &&
+          <div className="error-notification">
+            <ul>
+              {Object.values(errors)
+                .flat()
+                .map((errorMessage, index) => (
+                  <li key={index}>{errorMessage}</li>
+                ))}
+            </ul>
+          </div>
+              }
+                
+          <div className='modal-content'>
+              <form onSubmit={addUser}>
+                  <input type="text" name="username" placeholder='Username' />
+                  <input type="text" name="first_name" placeholder='First Name' />
+                  <input type="text" name="last_name" placeholder='Last Name' />
+                  <input type="number" name="phone_number" placeholder='Phone Number' />
+                  <input type="email" name="email" placeholder='email' />
+                  <input type="password" name="password" placeholder='Password' />
+                  <button className='submit-btn' type='submit'>Submit</button>
+              </form>
+          </div>
+        </Modal>
+        <h3 className="headertext">A list of All Users</h3>
           <div className='holdtable'>
-    
+          {/* if users are being fetched show loading */}
           {users ? ( 
 
             <>
 
+             {/* if no users show the message */}
             {users.length > 0 ? (
   
             <table className="users">
@@ -184,9 +192,12 @@ const UsersPage = () => {
 
                   
                 <tbody>
+
+                  {/* show all the users details in a table */}
                 
                     {users && users.map(user =>
                     
+                        // click on row to navigate to user details
                         <tr key={user.id} onClick={() => handleClick(user)}>
                             <td>{user.username} </td>
                             <td>{user.first_name} {user.last_name}</td>
@@ -201,13 +212,18 @@ const UsersPage = () => {
   
             </table>
             ) :( 
+              // message displayed when there are no users
             <div className="message">
               <p>Hello there! Currently, there are no users on the platform. However, you can add a new user by clicking on the "Add User" button.</p>
             </div>
           )}
             </>
             ) : (
+              // message displayed when users are being fetched form APi
+            <div className="loading-container">
+              <div className="spinner"></div>
               <p>Loading users...</p>
+            </div>
             )}
 
           </div> 
